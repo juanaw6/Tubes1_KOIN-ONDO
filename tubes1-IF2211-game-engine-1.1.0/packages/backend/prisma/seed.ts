@@ -47,14 +47,14 @@ const main = async () => {
       boardConfig: {
         create: {
           canTackle: true,
-          height: 15,
-          width: 15,
+          height: 12,
+          width: 12,
           inventorySize: 5,
           sessionLength: 60,
-          teleporters: 1,
+          teleporters: 2,
           minimumDelayBetweenMoves: 100,
           teleportRelocation: 30,
-          dummyBots: 0,
+          dummyBots: 2,
         },
       },
     },

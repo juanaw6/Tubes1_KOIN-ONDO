@@ -19,8 +19,8 @@ class MyAlgo(BaseLogic):
         self.time_reset_teleporter: Optional[int] = None
         self.next_position_dodge: List[Position] = []
         self.is_dodge = False
-        self.around = [(1, 0), (0, 1), (-1, 0), (0, -1), (1,1), (-1, -1), (1, -1), (-1, 1)]
-        self.is_attack_before = False
+        # self.around = [(1, 0), (0, 1), (-1, 0), (0, -1), (1,1), (-1, -1), (1, -1), (-1, 1)]
+        # self.is_attack_before = False
         # self.second_goal_position: Optional[Position] = None
 
     def next_move(self, board_bot: GameObject, board: Board):
@@ -30,6 +30,7 @@ class MyAlgo(BaseLogic):
             # if (self.time_reset_teleporter == None):
             #     [feature] = [d for d in board.features if d.name == "TeleportRelocationProvider"]
             #     self.time_reset_teleporter = feature.config.seconds
+            
             current_position: Position = board_bot.position
 
             teleporters_arr: List[GameObject] = []
@@ -56,37 +57,42 @@ class MyAlgo(BaseLogic):
                 else:
                     self.is_dodge = False
             
-            if board_bot.properties.diamonds != board_bot.properties.inventory_size:
-                if self.is_attack_before:
-                    self.is_attack_before = False
-                else:
-                    enemy_bot = None
+            # if board_bot.properties.diamonds != board_bot.properties.inventory_size:
+            #     if self.is_attack_before:
+            #         self.is_attack_before = False
+            #     else:
+            #         enemy_bot = None
                     
-                    for s in self.around:
-                        (x, y) = s
-                        plus_x = current_position.x + x
-                        plus_y = current_position.y + y
-                        for ob in board.game_objects:
-                            if ob.type == "BotGameObject" and position_equals(Position(plus_y, plus_x), ob.position):
-                                enemy_bot = ob
-                                break
+            #         for s in self.around:
+            #             (x, y) = s
+            #             plus_x = current_position.x + x
+            #             plus_y = current_position.y + y
+            #             for ob in board.game_objects:
+            #                 if ob.type == "BotGameObject" and position_equals(Position(plus_y, plus_x), ob.position):
+            #                     enemy_bot = ob
+            #                     break
                             
-                        if (enemy_bot != None):
-                            break
+            #             if (enemy_bot != None):
+            #                 break
                     
-                    if (enemy_bot != None):     
-                        enemy_position = enemy_bot.position
-                        delta_x, delta_y = get_direction(
-                            current_position.x,
-                            current_position.y,
-                            enemy_position.x,
-                            enemy_position.y
-                        )
-                        self.is_attack_before = True
-                        return delta_x, delta_y    
+            #         if (enemy_bot != None):     
+            #             enemy_position = enemy_bot.position
+            #             delta_x, delta_y = get_direction(
+            #                 current_position.x,
+            #                 current_position.y,
+            #                 enemy_position.x,
+            #                 enemy_position.y
+            #             )
+            #             self.is_attack_before = True
+            #             return delta_x, delta_y    
  
 
-            if board_bot.properties.diamonds >= board_bot.properties.inventory_size:
+            max_inventory_size = board_bot.properties.inventory_size
+            
+            if board_bot.properties.milliseconds_left < 20:
+                max_inventory_size = round(max_inventory_size / 2)
+                
+            if board_bot.properties.diamonds >= max_inventory_size:
                 base: Base = board_bot.properties.base
                 self.goal_position = base
                 self.is_use_teleporter = True
@@ -156,17 +162,19 @@ class MyAlgo(BaseLogic):
                                     
                         diamonds.append((ob, range, teleporter_from, teleporter_to, range_to_base, teleporter_from_2))  
                         
-                diamonds.sort(key=lambda x: x[1], reverse=True)  
+                diamonds.sort(key=lambda x: x[1] + x[4], reverse=True)  
                 diamond = diamonds.pop()
                 if (board_bot.properties.inventory_size - board_bot.properties.diamonds <= 1):
                     if (diamond[0].properties.points == 2):
                         diamond = diamonds.pop()
                 
-                if (diamond[4] > 15):
-                    diamond = diamond.pop()
+                # check = list(filter(lambda x: x[4] < 10, diamonds))
+                # if (len(check) > 0):
+                #     while diamond[4] > 10:
+                #         diamond = diamond.pop()
                         
                 # print(diamond)
-                if (board_bot.properties.milliseconds_left < (diamond[1] + diamond[4] + 1.2) * 1000) and (board_bot.properties.diamonds >= 1):
+                if (board_bot.properties.milliseconds_left < (diamond[1] + diamond[4] + 1) * (board.minimum_delay_between_moves * 2)) and (board_bot.properties.diamonds >= 1):
                     if diamond[5] != None:
                         self.goal_position = diamond[5].position
                         self.is_use_teleporter = True

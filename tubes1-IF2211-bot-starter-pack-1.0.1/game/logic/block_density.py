@@ -3,6 +3,7 @@ from typing import Optional
 from game.logic.base import BaseLogic
 from game.models import GameObject, Board, Position
 from ..util import clamp
+import random
 
 
 class BlockDensityLogic(BaseLogic):
@@ -10,7 +11,7 @@ class BlockDensityLogic(BaseLogic):
         self.directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         self.goal_position: Optional[Position] = None
         self.current_direction = 0
-        self.avoid_other_bots = False
+        self.attack_other_bots = False
 
     def get_surroundings_points(self, diamond, list_of_diamonds):
         list_to_check = [(-1, 1), (0, 1), (1, 1), (-1, 0), (1, 0), (-1, -1), (0, -1), (1, -1)]
@@ -53,6 +54,28 @@ class BlockDensityLogic(BaseLogic):
         if delta_y != 0:
             delta_x = 0
         return (delta_x, delta_y)
+    
+    def handle_not_moving(self, current_position, board_width, board_height):
+        if current_position.x == 0:
+            if current_position.y == 0:
+                return 1, 0
+            elif current_position.y == board_height - 1:
+                return 0, -1
+            else:
+                return 0, -1 
+        elif current_position.x == board_width - 1:
+            if current_position.y == 0:
+                return 0, 1
+            elif current_position.y == board_height - 1:
+                return -1, 0
+            else:
+                return 0, 1
+        elif current_position.y == 0:
+            return 1, 0
+        elif current_position.y == board_height - 1:
+            return -1, 0
+        else:
+            return 1, 0
 
     def next_move(self, board_bot: GameObject, board: Board):
         game_objects = [x for x in board.game_objects]
@@ -89,18 +112,30 @@ class BlockDensityLogic(BaseLogic):
             else:
                 self.goal_position = sorted_temp[0][0]
 
+        if (board_bot.properties.milliseconds_left < (distance_to_base + 1.2) * (1000)) and (props.diamonds >= 1):
+            self.goal_position = base
+
         is_closer, teleporter_to_use = self.is_teleporting_closer(board_bot.position, self.goal_position, teleporter_pairs)
         if is_closer:
-            self.goal_position = teleporter_to_use
+            if teleporter_to_use != None :
+                self.goal_position = teleporter_to_use
+
+        refresh_buttons = [x.position for x in game_objects if x.type == "DiamondButtonGameObject"]
+        if self.goal_position != base and len(sorted_temp) <= 5:
+            for button in refresh_buttons:
+                distance_to_button = self.get_distance(current_position, button)
+
+                if distance_to_button < self.get_distance(current_position, self.goal_position):
+                    self.goal_position = button
             
-        #Avoid enemy
-        # bots = [x.position for x in game_objects if x.type == "BotGameObject" and x.id != board_bot.id]
-        # if self.avoid_other_bots:
-        #     for bot in bots:
-        #         for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
-        #             print(bot.x, bot.y)
-        #             if bot.x == current_position.x + dx and bot.y == current_position.y + dy:
-        #                 return 0, 0
+        #Attack to nearby enemy
+        bots = [x.position for x in game_objects if x.type == "BotGameObject" and x.id != board_bot.id]
+        if self.attack_other_bots:
+            for bot in bots:
+                for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+                    print(bot.x, bot.y)
+                    if bot.x == current_position.x + dx and bot.y == current_position.y + dy:
+                        return dx, dy
 
         if self.goal_position:
             delta_x, delta_y = self.get_direction_yfirst(
@@ -110,7 +145,11 @@ class BlockDensityLogic(BaseLogic):
                 self.goal_position.y,
             )
         
-        # #Random error handling
-        # if delta_x == 0 and delta_y == 0:
-        #     delta_x = 1
-        # return delta_x, delta_y
+        board_width = board.width
+        board_height = board.height
+        if delta_x == 0 and delta_y == 0:
+            delta_x, delta_y = self.handle_not_moving(current_position, board_width, board_height)
+        
+        print(self.goal_position)
+        return delta_x, delta_y
+

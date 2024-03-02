@@ -113,8 +113,20 @@ class EnriqueLogic(BaseLogic):
             distances.append((distance, obj))
 
         distances.sort(key=lambda x: x[0])
-        
+
         self.goal_position = distances[0][1]
+
+        uToBase = calculate_distance(current_position.x, current_position.y, base.x, base.y)
+        baseToTarget = calculate_distance(self.goal_position.x, self.goal_position.y, base.x, base.y)
+        uTotarget  = calculate_distance(
+            current_position.x,
+            current_position.y,
+            self.goal_position.x,
+            self.goal_position.y,
+        )
+        # check jika plg ke base searah
+        if (props.diamonds > 0 and (uToBase + baseToTarget - uTotarget) <=2):
+            self.goal_position = base
 
         is_closer, teleporter_to_use = is_teleporting_closer(board_bot.position, self.goal_position, teleporter_pairs)
         if is_closer:

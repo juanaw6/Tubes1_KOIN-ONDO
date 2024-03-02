@@ -114,8 +114,7 @@ class EnriqueLogic(BaseLogic):
 
         distances.sort(key=lambda x: x[0])
         
-        self.selected_checkpoints = distances[:3]
-        self.goal_position = self.selected_checkpoints[0][1]
+        self.goal_position = distances[0][1]
 
         is_closer, teleporter_to_use = is_teleporting_closer(board_bot.position, self.goal_position, teleporter_pairs)
         if is_closer:
@@ -128,8 +127,6 @@ class EnriqueLogic(BaseLogic):
             self.goal_position.y,
         )
 
-        self.selected_checkpoints.pop(0)
-        print(delta_x, delta_y)
 
         if delta_x == 0 and delta_y == 0 :
                 delta_x, delta_y = handle_not_moving(current_position, board.width, board.height)

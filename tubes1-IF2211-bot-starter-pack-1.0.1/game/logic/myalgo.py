@@ -15,13 +15,6 @@ class MyAlgo(BaseLogic):
     def __init__(self):
         self.goal_position: Optional[Position] = None
         self.goal_obj: Optional[GameObject] = None
-        # self.is_use_teleporter: bool = False
-        # self.time_reset_teleporter: Optional[int] = None
-        # self.next_position_dodge: List[Position] = []
-        # self.is_dodge = False
-        # self.around = [(1, 0), (0, 1), (-1, 0), (0, -1), (1,1), (-1, -1), (1, -1), (-1, 1)]
-        # self.is_attack_before = False
-        # self.second_goal_position: Optional[Position] = None
     
     def get_direction_y(current_x, current_y, dest_x, dest_y):
         delta_x = clamp(dest_x - current_x, -1, 1)
@@ -61,7 +54,7 @@ class MyAlgo(BaseLogic):
             teleporters_arr: List[GameObject] = []
             teleporters = {}
 
-
+            #Menyimpan data semua teleporter
             for ob in board.game_objects:
                 if (ob.type == "TeleportGameObject"):
                     if teleporters.get(ob.properties.pair_id) == None:
@@ -72,11 +65,13 @@ class MyAlgo(BaseLogic):
                     teleporters_arr.append(ob) 
     
 
+            #Menghitung banyak diamond maksimal yang akan dibawa
             max_inventory_size = board_bot.properties.inventory_size
             
             if board_bot.properties.milliseconds_left < 20:
                 max_inventory_size = round(max_inventory_size / 2)
-                
+               
+            #Kembali ke base jika sudah membawa banyak diamand yang diinginkan 
             if board_bot.properties.diamonds >= max_inventory_size:
                 base: Base = board_bot.properties.base
                 self.goal_position = base
@@ -86,27 +81,17 @@ class MyAlgo(BaseLogic):
                 teleporter_to = None
                 for teleporter_id in  teleporters.keys():
                     [teleporter1, teleporter2] = teleporters[teleporter_id]
-                    # range_tel_1 =  abs(teleporter1.position.x - current_position.x) + abs(teleporter1.position.y - current_position.y)
-                    # range_tel_2 =  abs(teleporter2.position.x - base.x) + abs(teleporter2.position.y - base.y)
-                    # tot_range_1 = range_tel_1 + range_tel_2
-                    # range_tel_2 =  abs(teleporter2.position.x - current_position.x) + abs(teleporter2.position.y - current_position.y)
-                    # range_tel_1 =  abs(teleporter1.position.x - base.x) + abs(teleporter1.position.y - base.y)
-                    # tot_range_2 = range_tel_1 + range_tel_2
                     
+    
                     range, teleporter_from, teleporter_to = self.calcRange(current_position, base, teleporter1.position, teleporter2.position, range)
-                    # if (tot_range_1 < tot_range_2):
-                    #     if (tot_range_1 < range):
-                    #         self.goal_position = teleporter1.position
-                    #         self.goal_obj = teleporter1
-                    #         self.is_use_teleporter = True
-                    # else:
-                    #     if (tot_range_2 < range):   
-                    #         self.goal_position = teleporter2.position
-                    #         self.goal_obj = teleporter2
-                    #         self.is_use_teleporter = True
+                    
                     self.goal_position = teleporter_from.position
                     self.goal_obj = teleporter_from
+                    
+            #Mencari diamond atau red button terdekat dari bot
             else:
+                
+                #Menghitung jarak dari bot ke objek tujuan dengan melibatkan teleporter
                 diamonds: List[GameObject] = []
                 for ob in board.game_objects:
                     if (ob.type == "DiamondGameObject" or ob.type == "DiamondButtonGameObject"):
@@ -118,67 +103,46 @@ class MyAlgo(BaseLogic):
                         teleporter_to_2 = None
                         for teleporter_id in  teleporters.keys():
                             [teleporter1, teleporter2] = teleporters[teleporter_id]
-                            # range_tel_1 =  abs(teleporter1.position.x - current_position.x) + abs(teleporter1.position.y - current_position.y)
-                            # range_tel_2 =  abs(teleporter2.position.x - ob.position.x) + abs(teleporter2.position.y - ob.position.y)
-                            # tot_range_1 = range_tel_1 + range_tel_2
-                            # range_tel_2 =  abs(teleporter2.position.x - current_position.x) + abs(teleporter2.position.y - current_position.y)
-                            # range_tel_1 =  abs(teleporter1.position.x - ob.position.x) + abs(teleporter1.position.y - ob.position.y)
-                            # tot_range_2 = range_tel_1 + range_tel_2
+                            
                             
                             r, tf, tt = self.calcRange(current_position, ob.position, teleporter1.position, teleporter2.position, range)
                             range = r
                             teleporter_from = tf
                             teleporter_to = tt
                             
-                            # if (tot_range_1 < tot_range_2):
-                            #     if (tot_range_1 < range):
-                            #         range = tot_range_1
-                            #         teleporter_from = teleporter1
-                            #         teleporter_to = teleporter2
-                            # else:
-                            #     if (tot_range_2 < range):   
-                            #         range = tot_range_2
-                            #         teleporter_from = teleporter2
-                            #         teleporter_to = teleporter1
+                            
                             
                             r, tf, tt = self.calcRange(board_bot.properties.base, ob.position, teleporter1.position, teleporter2.position, range_to_base)
                             range_to_base = r
                             teleporter_from_2 = tf
                             teleporter_to_2 = tt
                                     
-                            # range_tel_1 =  abs(teleporter1.position.x - board_bot.properties.base.x) + abs(teleporter1.position.y - board_bot.properties.base.y)
-                            # range_tel_2 =  abs(teleporter2.position.x - ob.position.x) + abs(teleporter2.position.y - ob.position.y)
-                            # tot_range_1 = range_tel_1 + range_tel_2
-                            # range_tel_2 =  abs(teleporter2.position.x - board_bot.properties.base.x) + abs(teleporter2.position.y - board_bot.properties.base.y)
-                            # range_tel_1 =  abs(teleporter1.position.x - ob.position.x) + abs(teleporter1.position.y - ob.position.y)
-                            # tot_range_2 = range_tel_1 + range_tel_2
-                            # if (tot_range_1 < tot_range_2):
-                            #     if (tot_range_1 < range_to_base):
-                            #         range_to_base = tot_range_1
-                            #         teleporter_from_2 = teleporter1
-                            # else:
-                            #     if (tot_range_2 < range_to_base):   
-                            #         range_to_base = tot_range_2
-                            #         teleporter_from_2 = teleporter2
+                            
                                     
                         diamonds.append((ob, range, teleporter_from, teleporter_to, range_to_base, teleporter_from_2, teleporter_to_2))  
-                        
+                  
+                #Diamond terakhir yang akan dibawa akan dicari berdasarkan total jarak 
+                #dari bot ke diamond + jarak dari diamond ke base yang terpendek 
                 if (max_inventory_size - board_bot.properties.diamonds == 1):
                     diamonds.sort(key=lambda x: x[1] + x[4], reverse=True)
                 else:
                     diamonds.sort(key=lambda x: x[1], reverse=True)  
                 
                 diamond = diamonds.pop()
+                
+                #Menghindari pengambilan diamond merah ketika inventory size tersisa satu      
                 if (board_bot.properties.inventory_size - board_bot.properties.diamonds <= 1 ):
                     if (diamond[0].properties.points == 2):
                         diamond = diamonds.pop()
                 
+                #Mencari diamond yang jaraknya tidak lebih dari 8 langkah dari base jika ada
                 if (max_inventory_size - board_bot.properties.diamonds != 1):
                     check = list(filter(lambda x: x[4] < 8, diamonds))
                     if (len(check) > 0):
                         while diamond[4] > 8:
                             diamond = diamond.pop()
                         
+                #Mengecek apakah waktu yang tersisa cukup untuk mengambil diamond lagi atau tidak
                 if (self.isTimeEnough(board_bot.properties.milliseconds_left, diamond[1], diamond[4])) and (board_bot.properties.diamonds >= 1):
                     if diamond[5] != None:
                         self.goal_position = diamond[5].position
@@ -210,6 +174,8 @@ class MyAlgo(BaseLogic):
                 self.goal_position.y,
             )
 
+            #Pengecekan apakah pergerakan valid atau tidak
+            #Mencegah terjadi bug bug yang tidak diinginkan
             if board.is_valid_move(current_position, delta_x, delta_y):
                 return delta_x, delta_y
             else:

@@ -50,15 +50,12 @@ class MyAlgo(BaseLogic):
                     teleporter_to = teleporter1 
         
         return (range, teleporter_from, teleporter_to)
+    
+    def isTimeEnough(time_left, range_to, range_back):
+        return time_left < (range_to + range_back + 1.3) * (1000)
 
     def next_move(self, board_bot: GameObject, board: Board):
         try:
-            # start_time = time.time()
-
-            # if (self.time_reset_teleporter == None):
-            #     [feature] = [d for d in board.features if d.name == "TeleportRelocationProvider"]
-            #     self.time_reset_teleporter = feature.config.seconds
-            
             current_position: Position = board_bot.position
 
             teleporters_arr: List[GameObject] = []
@@ -73,47 +70,7 @@ class MyAlgo(BaseLogic):
                         teleporters[ob.properties.pair_id].append(ob) 
 
                     teleporters_arr.append(ob) 
-                    
-            # if self.is_dodge:
-            #     print(self.next_position_dodge)
-            #     if len(self.next_position_dodge) > 0:
-            #         pos: Position = self.next_position_dodge.pop(0)
-            #         if board.is_valid_move(current_position, pos.x, pos.y):
-            #             return pos.x, pos.y  
-            #         else:
-            #             raise Exception("invalid move")
-            #     else:
-            #         self.is_dodge = False
-            
-            # if board_bot.properties.diamonds != board_bot.properties.inventory_size:
-            #     if self.is_attack_before:
-            #         self.is_attack_before = False
-            #     else:
-            #         enemy_bot = None
-                    
-            #         for s in self.around:
-            #             (x, y) = s
-            #             plus_x = current_position.x + x
-            #             plus_y = current_position.y + y
-            #             for ob in board.game_objects:
-            #                 if ob.type == "BotGameObject" and position_equals(Position(plus_y, plus_x), ob.position):
-            #                     enemy_bot = ob
-            #                     break
-                            
-            #             if (enemy_bot != None):
-            #                 break
-                    
-            #         if (enemy_bot != None):     
-            #             enemy_position = enemy_bot.position
-            #             delta_x, delta_y = get_direction(
-            #                 current_position.x,
-            #                 current_position.y,
-            #                 enemy_position.x,
-            #                 enemy_position.y
-            #             )
-            #             self.is_attack_before = True
-            #             return delta_x, delta_y    
- 
+    
 
             max_inventory_size = board_bot.properties.inventory_size
             
@@ -217,12 +174,12 @@ class MyAlgo(BaseLogic):
                         diamond = diamonds.pop()
                 
                 if (max_inventory_size - board_bot.properties.diamonds != 1):
-                    check = list(filter(lambda x: x[4] < 9, diamonds))
+                    check = list(filter(lambda x: x[4] < 8, diamonds))
                     if (len(check) > 0):
-                        while diamond[4] > 9:
+                        while diamond[4] > 8:
                             diamond = diamond.pop()
                         
-                if (board_bot.properties.milliseconds_left < (diamond[1] + diamond[4] + 1.3) * (1000)) and (board_bot.properties.diamonds >= 1):
+                if (self.isTimeEnough(board_bot.properties.milliseconds_left, diamond[1], diamond[4])) and (board_bot.properties.diamonds >= 1):
                     if diamond[5] != None:
                         self.goal_position = diamond[5].position
                         self.is_use_teleporter = True
@@ -253,43 +210,6 @@ class MyAlgo(BaseLogic):
                 self.goal_position.y,
             )
 
-            # if (self.is_use_teleporter == False):
-            #     next_x = delta_x + current_position.x
-            #     next_y = delta_y + current_position.y
-            #     filtered_teleporter = list(filter(lambda a: a.position.x == next_x and a.position.y == next_y, teleporters_arr))
-
-            #     if (len(filtered_teleporter) > 0):
-            #         print("Halo cokkkkkkkkkkkkkkkkkkkkk")
-            #         self.is_dodge = True
-            #         if (delta_x != 0):
-            #             delta_next_x = delta_x
-                        
-            #             if current_position.y == 0:
-            #                 delta_x = 0
-            #                 delta_y = 1
-                            
-            #                 self.next_position_dodge.append(Position(0, delta_next_x))
-            #                 self.next_position_dodge.append(Position(0, delta_next_x))
-            #             else:
-            #                 delta_x = 0
-            #                 delta_y = -1
-            #                 self.next_position_dodge.append(Position(0, delta_next_x))
-            #                 self.next_position_dodge.append(Position(0, delta_next_x))
-            #         elif (delta_y != 0):
-            #             delta_next_y = delta_y
-            #             if current_position.x == 0:
-            #                 delta_y = 0
-            #                 delta_x = 1
-            #                 self.next_position_dodge.append(Position(delta_next_y, 0))
-            #                 self.next_position_dodge.append(Position(delta_next_y, 0))
-            #             else:
-            #                 delta_y = 0
-            #                 delta_x = -1
-            #                 self.next_position_dodge.append(Position(delta_next_y, 0))
-            #                 self.next_position_dodge.append(Position(delta_next_y, 0))
-
-            # end_time = time.time()
-            # print(end_time-start_time)
             if board.is_valid_move(current_position, delta_x, delta_y):
                 return delta_x, delta_y
             else:

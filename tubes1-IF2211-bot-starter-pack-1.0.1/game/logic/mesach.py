@@ -64,7 +64,7 @@ class MyAlgo(BaseLogic):
             #Menghitung banyak diamond maksimal yang akan dibawa
             max_inventory_size = board_bot.properties.inventory_size
             
-            if board_bot.properties.milliseconds_left < 30:
+            if board_bot.properties.milliseconds_left < 30000:
                 max_inventory_size = round(max_inventory_size / 2)
                 
             #Kembali ke base jika sudah membawa banyak diamand yang diinginkan

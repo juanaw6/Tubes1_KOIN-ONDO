@@ -6,8 +6,8 @@ import random
 from typing import Optional, List
 import time
 
-#Selalu mangumpulkan max diamond
-class MyAlgo2(BaseLogic):
+#Mengutamakan diamond dan base terdekat
+class MyAlgo3(BaseLogic):
     def __init__(self):
         self.goal_position: Optional[Position] = None
         self.goal_obj: Optional[GameObject] = None
@@ -132,17 +132,17 @@ class MyAlgo2(BaseLogic):
                                     teleporter_from_2 = teleporter2
                                     
                         diamonds.append((ob, range, teleporter_from, teleporter_to, range_to_base, teleporter_from_2))  
-                        
+                 
+                diamonds.sort(key=lambda x: x[1] + x[4], reverse=True) 
                 
-                diamonds.sort(key=lambda x: x[1], reverse=True)  
                 
                 diamond = diamonds.pop()
                 
                 #Menghindari pengambilan diamond merah ketika inventory size tersisa satu      
                 if (board_bot.properties.inventory_size - board_bot.properties.diamonds <= 1 ):
-                    while (diamond[0].properties.points == 2 and len(diamond) > 0):
-                        
+                    while (diamonds[0].properties.points == 2 and len(diamonds) > 0):
                         diamond = diamonds.pop()
+                        
                     if (len(diamonds) <= 0):
                     
                         self.goal_position = board_bot.properties.base
@@ -153,8 +153,7 @@ class MyAlgo2(BaseLogic):
                             self.goal_position.y,
                         )
                         return delta_x, delta_y
-                
-
+            
                         
                 #Mengecek apakah waktu yang tersisa cukup untuk mengambil diamond lagi atau tidak
                 if (board_bot.properties.milliseconds_left < (diamond[1] + diamond[4] + 1.3) * (1000)) and (board_bot.properties.diamonds >= 1):

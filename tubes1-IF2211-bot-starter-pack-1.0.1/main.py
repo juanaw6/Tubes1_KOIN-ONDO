@@ -9,6 +9,10 @@ from game.logic.random import RandomLogic
 from game.logic.block_density import BlockDensityLogic
 from game.logic.enrique import EnriqueLogic
 from game.logic.mesach import MyAlgo
+from game.logic.mesach2 import MyAlgo2
+from game.logic.mesach3 import MyAlgo3
+from game.logic.mesach4 import MyAlgo4
+from game.logic.mesach5 import MyAlgo5
 from game.util import *
 from game.logic.base import BaseLogic
 
@@ -19,7 +23,11 @@ CONTROLLERS = {
     "Random": RandomLogic,
     "BlockDensity": BlockDensityLogic,
     "Enrique" : EnriqueLogic,
-    "Mesach": MyAlgo
+    "Mesach": MyAlgo,
+    "Mesach2": MyAlgo2,
+    "Mesach3": MyAlgo3,
+    "Mesach4": MyAlgo4,
+    "Mesach5": MyAlgo5,
 }
 
 ###############################################################################

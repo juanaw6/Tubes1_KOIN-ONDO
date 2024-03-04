@@ -6,11 +6,7 @@ import random
 from typing import Optional, List
 import time
 
-#DiamondGameObject
-#DiamondButtonGameObject
-#BotGameObject
-#TeleportGameObject
-#BaseGameObject
+
 class MyAlgo(BaseLogic):
     def __init__(self):
         self.goal_position: Optional[Position] = None
@@ -49,7 +45,6 @@ class MyAlgo(BaseLogic):
 
     def next_move(self, board_bot: GameObject, board: Board):
         try:
-            
             
             current_position: Position = board_bot.position
 
@@ -149,21 +144,36 @@ class MyAlgo(BaseLogic):
                 if (max_inventory_size - board_bot.properties.diamonds == 1):
                     diamonds.sort(key=lambda x: x[1] + x[4], reverse=True)
                 else:
-                    diamonds.sort(key=lambda x: x[1], reverse=True)  
+                    diamonds.sort(key=lambda x: x[1], reverse=True)
+                
+                diamonds_temp = diamonds.copy() 
+                
+                
+                #Diamond yang diambil sebisa mungkin berada dekat dengan base yaitu <= 8 langkah dari base
+                #Jika tidak ada diamond yang dekat dengan base maka akan diperbolehkan mencari yang jauh dari base
+                diamonds = list(filter(lambda x: x[4] <= 8, diamonds))
+                
+                if (len(diamonds) == 0):
+                    diamonds = diamonds_temp.copy()
                 
                 diamond = diamonds.pop()
                 
                 #Menghindari pengambilan diamond merah ketika inventory size tersisa satu      
                 if (board_bot.properties.inventory_size - board_bot.properties.diamonds <= 1 ):
-                    if (diamond[0].properties.points == 2):
+                    while (diamond[0].properties.points == 2 and len(diamond) > 0):
+                        
                         diamond = diamonds.pop()
-                
-                #Mencari diamond yang jaraknya tidak lebih dari 8 langkah dari base jika ada
-                if (max_inventory_size - board_bot.properties.diamonds != 1):
-                    check = list(filter(lambda x: x[4] < 8, diamonds))
-                    if (len(check) > 0):
-                        while diamond[4] > 8:
-                            diamond = diamond.pop()
+                    if (len(diamonds) <= 0):
+                    
+                        self.goal_position = board_bot.properties.base
+                        delta_x, delta_y = get_direction(
+                            current_position.x,
+                            current_position.y,
+                            self.goal_position.x,
+                            self.goal_position.y,
+                        )
+                        return delta_x, delta_y
+                            
                         
                 #Mengecek apakah waktu yang tersisa cukup untuk mengambil diamond lagi atau tidak
                 if (board_bot.properties.milliseconds_left < (diamond[1] + diamond[4] + 1.3) * (1000)) and (board_bot.properties.diamonds >= 1):
@@ -172,13 +182,6 @@ class MyAlgo(BaseLogic):
                         
                     else:
                         self.goal_position = board_bot.properties.base
-                    
-                    delta_x, delta_y = get_direction(
-                        current_position.x,
-                        current_position.y,
-                        self.goal_position.x,
-                        self.goal_position.y,
-                    )
                 
                 else:
                     if (diamond[2] != None and diamond[3] != None):
@@ -199,8 +202,12 @@ class MyAlgo(BaseLogic):
             else:
                 raise Exception("invalid move")
         except:
-            if board_bot.position.x == 0:
-                return 1, 0
-            else:
-                return -1,0
+            delta_x, delta_y = get_direction(
+                current_position.x,
+                current_position.y,
+                board_bot.properties.base.x,
+                board_bot.properties.base.y,
+            )
+            
+            return delta_x, delta_y
             

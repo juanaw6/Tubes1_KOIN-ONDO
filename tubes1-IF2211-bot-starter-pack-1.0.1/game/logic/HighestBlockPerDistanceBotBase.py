@@ -3,7 +3,7 @@ from game.logic.base import BaseLogic
 from game.models import GameObject, Board, Position
 from ..util import clamp
 
-class ShortestToBotBaseLogic(BaseLogic):
+class HighestBlockPerDistanceBotBaseLogic(BaseLogic):
     def __init__(self):
         self.directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         self.goal_position: Optional[Position] = None
@@ -11,14 +11,25 @@ class ShortestToBotBaseLogic(BaseLogic):
         self.attack_other_bots = False
         self.time_based_retreat = True
 
+    def get_surroundings_points(self, diamond: tuple[Position, int], list_of_diamonds: list[tuple[Position, int]]) -> int:
+        list_to_check = [(-1, 1), (0, 1), (1, 1), (-1, 0), (1, 0), (-1, -1), (0, -1), (1, -1)]
+        points = diamond[1]
+        for delta in list_to_check :
+            coordinate_x = delta[0] + (diamond[0]).x
+            coordinate_y = delta[1] + (diamond[0]).y
+            for position, point in list_of_diamonds:
+                if position.x == coordinate_x and position.y == coordinate_y:
+                    points += point
+        return points
+
     def get_distance(self, current_position: Position, target_position: Position) -> int:
         return abs(current_position.x - target_position.x) + abs(current_position.y - target_position.y)
 
-    def calculate_benefit(self, point: int, distance: int) -> float :
-        if distance == 0:
+    def calculate_benefit(self, point: int, bot_distance_to_diamond: int, diamond_distance_to_base: int) -> float :
+        if bot_distance_to_diamond + diamond_distance_to_base == 0:
             return 0
         else :
-            return (point / distance) * 100000
+            return (point / (bot_distance_to_diamond + diamond_distance_to_base)) * 100000
         
     def is_teleporting_closer(self, bot_position: Position, target_position: Position, teleporter_pairs: list[tuple[Position, Position]]) -> tuple[bool, Optional[Position]]:
         direct_distance = self.get_distance(bot_position, target_position)
@@ -80,11 +91,12 @@ class ShortestToBotBaseLogic(BaseLogic):
 
         temp = []
         for diamond in diamonds:
-            distance_from_base = self.get_distance(board_bot.properties.base, diamond[0])
-            distance_from_bot = self.get_distance(board_bot.position, diamond[0])
-            total_distance = distance_from_bot + distance_from_base
-            temp.append((diamond[0], diamond[1], distance_from_bot, total_distance))
-        sorted_temp = sorted(temp, key=lambda x: x[3])
+            surrounding_points = self.get_surroundings_points(diamond, diamonds)
+            bot_distance_to_diamond = self.get_distance(board_bot.position, diamond[0])
+            diamond_distance_to_base = self.get_distance(diamond[0], board_bot.properties.base)
+            benefit = self.calculate_benefit(surrounding_points, bot_distance_to_diamond, diamond_distance_to_base)
+            temp.append((diamond[0], benefit, diamond[1], bot_distance_to_diamond, surrounding_points))
+        sorted_temp = sorted(temp, key=lambda x: x[1], reverse=True)
 
         props = board_bot.properties
         base = board_bot.properties.base
@@ -94,7 +106,7 @@ class ShortestToBotBaseLogic(BaseLogic):
         if props.diamonds == 5:
             self.goal_position = base
         else:
-            if (props.diamonds == 4 and sorted_temp[0][1] == 2) or (props.diamonds >= 3 and distance_to_base < sorted_temp[0][2]):
+            if (props.diamonds == 4 and sorted_temp[0][2] == 2) or (props.diamonds >= 3 and distance_to_base < sorted_temp[0][3]):
                 self.goal_position = base
             else:
                 self.goal_position = sorted_temp[0][0]
@@ -106,7 +118,7 @@ class ShortestToBotBaseLogic(BaseLogic):
 
                 if distance_to_button < self.get_distance(current_position, self.goal_position):
                     self.goal_position = button
-
+        
         if self.time_based_retreat:
             if (board_bot.properties.milliseconds_left < (distance_to_base + 1.3) * (1000)) and (props.diamonds >= 1):
                 self.goal_position = base

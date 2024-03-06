@@ -3,7 +3,7 @@ from game.logic.base import BaseLogic
 from game.models import GameObject, Board, Position
 from ..util import clamp
 
-class ShortestToBotBaseLogic(BaseLogic):
+class ShortestToBotLogic(BaseLogic):
     def __init__(self):
         self.directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         self.goal_position: Optional[Position] = None
@@ -80,11 +80,9 @@ class ShortestToBotBaseLogic(BaseLogic):
 
         temp = []
         for diamond in diamonds:
-            distance_from_base = self.get_distance(board_bot.properties.base, diamond[0])
             distance_from_bot = self.get_distance(board_bot.position, diamond[0])
-            total_distance = distance_from_bot + distance_from_base
-            temp.append((diamond[0], diamond[1], distance_from_bot, total_distance))
-        sorted_temp = sorted(temp, key=lambda x: x[3])
+            temp.append((diamond[0], diamond[1], distance_from_bot))
+        sorted_temp = sorted(temp, key=lambda x: x[2])
 
         props = board_bot.properties
         base = board_bot.properties.base
@@ -106,7 +104,7 @@ class ShortestToBotBaseLogic(BaseLogic):
 
                 if distance_to_button < self.get_distance(current_position, self.goal_position):
                     self.goal_position = button
-
+        
         if self.time_based_retreat:
             if (board_bot.properties.milliseconds_left < (distance_to_base + 1.3) * (1000)) and (props.diamonds >= 1):
                 self.goal_position = base

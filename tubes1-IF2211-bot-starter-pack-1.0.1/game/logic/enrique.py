@@ -125,7 +125,10 @@ class EnriqueLogic(BaseLogic):
             self.goal_position.y,
         )
         # check jika plg ke base searah
-        if (props.diamonds > 0 and (uToBase + baseToTarget - uTotarget) <=2):
+        if (props.diamonds > 0 and (uToBase + baseToTarget - uTotarget) <= 2):
+            self.goal_position = base
+
+        if (board_bot.properties.milliseconds_left < (baseToTarget + 1.3) * (1000)) and (props.diamonds >= 1):
             self.goal_position = base
 
         is_closer, teleporter_to_use = is_teleporting_closer(board_bot.position, self.goal_position, teleporter_pairs)
@@ -138,7 +141,6 @@ class EnriqueLogic(BaseLogic):
             self.goal_position.x,
             self.goal_position.y,
         )
-
 
         if delta_x == 0 and delta_y == 0 :
                 delta_x, delta_y = handle_not_moving(current_position, board.width, board.height)

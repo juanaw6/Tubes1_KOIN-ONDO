@@ -98,6 +98,14 @@ class ShortestToBaseLogic(BaseLogic):
             else:
                 self.goal_position = sorted_temp[0][0]
 
+        refresh_buttons = [x.position for x in game_objects if x.type == "DiamondButtonGameObject"]
+        if self.goal_position != base:
+            for button in refresh_buttons:
+                distance_to_button = self.get_distance(current_position, button)
+
+                if distance_to_button < self.get_distance(current_position, self.goal_position):
+                    self.goal_position = button
+        
         if self.time_based_retreat:
             if (board_bot.properties.milliseconds_left < (distance_to_base + 1.3) * (1000)) and (props.diamonds >= 1):
                 self.goal_position = base
@@ -105,14 +113,6 @@ class ShortestToBaseLogic(BaseLogic):
         is_closer, teleporter_to_use = self.is_teleporting_closer(board_bot.position, self.goal_position, teleporter_pairs)
         if is_closer:
             self.goal_position = teleporter_to_use
-
-        refresh_buttons = [x.position for x in game_objects if x.type == "DiamondButtonGameObject"]
-        if self.goal_position != base and len(sorted_temp) <= 5:
-            for button in refresh_buttons:
-                distance_to_button = self.get_distance(current_position, button)
-
-                if distance_to_button < self.get_distance(current_position, self.goal_position):
-                    self.goal_position = button
             
         #Attack to nearby enemy
         if self.attack_other_bots:

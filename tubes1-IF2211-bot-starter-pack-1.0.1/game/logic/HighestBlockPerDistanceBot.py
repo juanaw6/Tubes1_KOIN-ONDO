@@ -3,13 +3,24 @@ from game.logic.base import BaseLogic
 from game.models import GameObject, Board, Position
 from ..util import clamp
 
-class ShortestToBotBaseLogic(BaseLogic):
+class HighestBlockPerDistanceBotLogic(BaseLogic):
     def __init__(self):
         self.directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
         self.goal_position: Optional[Position] = None
         self.current_direction = 0
         self.attack_other_bots = False
         self.time_based_retreat = True
+
+    def get_surroundings_points(self, diamond: tuple[Position, int], list_of_diamonds: list[tuple[Position, int]]) -> int:
+        list_to_check = [(-1, 1), (0, 1), (1, 1), (-1, 0), (1, 0), (-1, -1), (0, -1), (1, -1)]
+        points = diamond[1]
+        for delta in list_to_check :
+            coordinate_x = delta[0] + (diamond[0]).x
+            coordinate_y = delta[1] + (diamond[0]).y
+            for position, point in list_of_diamonds:
+                if position.x == coordinate_x and position.y == coordinate_y:
+                    points += point
+        return points
 
     def get_distance(self, current_position: Position, target_position: Position) -> int:
         return abs(current_position.x - target_position.x) + abs(current_position.y - target_position.y)
@@ -80,11 +91,11 @@ class ShortestToBotBaseLogic(BaseLogic):
 
         temp = []
         for diamond in diamonds:
-            distance_from_base = self.get_distance(board_bot.properties.base, diamond[0])
-            distance_from_bot = self.get_distance(board_bot.position, diamond[0])
-            total_distance = distance_from_bot + distance_from_base
-            temp.append((diamond[0], diamond[1], distance_from_bot, total_distance))
-        sorted_temp = sorted(temp, key=lambda x: x[3])
+            surrounding_points = self.get_surroundings_points(diamond, diamonds)
+            distance = self.get_distance(board_bot.position, diamond[0])
+            benefit = self.calculate_benefit(surrounding_points, distance)
+            temp.append((diamond[0], benefit, diamond[1], distance, surrounding_points))
+        sorted_temp = sorted(temp, key=lambda x: x[1], reverse=True)
 
         props = board_bot.properties
         base = board_bot.properties.base
@@ -94,7 +105,7 @@ class ShortestToBotBaseLogic(BaseLogic):
         if props.diamonds == 5:
             self.goal_position = base
         else:
-            if (props.diamonds == 4 and sorted_temp[0][1] == 2) or (props.diamonds >= 3 and distance_to_base < sorted_temp[0][2]):
+            if (props.diamonds == 4 and sorted_temp[0][2] == 2) or (props.diamonds >= 3 and distance_to_base < sorted_temp[0][3]):
                 self.goal_position = base
             else:
                 self.goal_position = sorted_temp[0][0]

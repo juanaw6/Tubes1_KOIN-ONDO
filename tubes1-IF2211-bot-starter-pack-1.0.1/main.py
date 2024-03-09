@@ -9,8 +9,8 @@ from game.logic.random import RandomLogic
 from game.util import *
 from game.logic.base import BaseLogic
 
-from game.logic.mesach2 import MyAlgo2
-from game.logic.mesach6 import MyAlgo6
+from game.logic.ShortestToBot2 import ShortestToBot2Logic
+from game.logic.ShortestToBot3 import ShortestToBot3Logic
 from game.logic.ShortestToBot import ShortestToBotLogic
 from game.logic.ShortestToBase import ShortestToBaseLogic
 from game.logic.ShortestToBotBase import ShortestToBotBaseLogic
@@ -22,15 +22,16 @@ from game.logic.ShortestToHighestBlock import ShortestToHighestBlockLogic
 from game.logic.HighestBlockPerDistanceBot import HighestBlockPerDistanceBotLogic
 from game.logic.HighestBlockPerDistanceBase import HighestBlockPerDistanceBaseLogic
 from game.logic.HighestBlockPerDistanceBotBase import HighestBlockPerDistanceBotBaseLogic
+from game.logic.ShortestToBotV2 import ShortestToBotV2Logic
 
 init()
 BASE_URL = "http://localhost:3000/api"
 DEFAULT_BOARD_ID = 1
 CONTROLLERS = {
     "Random": RandomLogic,
-    "mesach2" : MyAlgo2,
-    "mesach6" : MyAlgo6,
     "stbot" : ShortestToBotLogic,
+    "stbot2" : ShortestToBot2Logic,
+    "stbot3" :ShortestToBot3Logic,
     "stbase" : ShortestToBaseLogic,
     "stbotbase" : ShortestToBotBaseLogic,
     "sthr" : ShortestToHighestRewardLogic,
@@ -40,7 +41,8 @@ CONTROLLERS = {
     "sthb" : ShortestToHighestBlockLogic,
     "bpdbot" : HighestBlockPerDistanceBotLogic,
     "bpdbase" : HighestBlockPerDistanceBaseLogic,
-    "bpdbotbase" : HighestBlockPerDistanceBotBaseLogic
+    "bpdbotbase" : HighestBlockPerDistanceBotBaseLogic,
+    "stbv2" : ShortestToBotV2Logic
 }
 
 ###############################################################################

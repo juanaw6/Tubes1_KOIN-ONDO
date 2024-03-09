@@ -6,8 +6,8 @@ import random
 from typing import Optional, List
 import time
 
-#Mengutamakan diamond merah terdekat
-class MyAlgo3(BaseLogic):
+#Selalu mangumpulkan max diamond
+class ShortestToBot2Logic(BaseLogic):
     def __init__(self):
         self.goal_position: Optional[Position] = None
         self.goal_obj: Optional[GameObject] = None
@@ -132,25 +132,18 @@ class MyAlgo3(BaseLogic):
                                     teleporter_from_2 = teleporter2
                                     
                         diamonds.append((ob, range, teleporter_from, teleporter_to, range_to_base, teleporter_from_2))  
-                 
-                diamonds.sort(key=lambda x: x[1], reverse=True) 
+                        
                 
-                diamonds_temp = diamonds.copy()
-                
-                #Mengutamakan pencarian diamond merah
-                diamonds = list(filter(lambda x: x[0].properties.points == 2, diamonds))
-                
-                if (len(diamonds) == 0):
-                    diamonds = diamonds_temp.copy()
+                diamonds.sort(key=lambda x: x[1], reverse=True)  
                 
                 diamond = diamonds.pop()
                 
                 #Menghindari pengambilan diamond merah ketika inventory size tersisa satu      
                 if (board_bot.properties.inventory_size - board_bot.properties.diamonds <= 1 ):
-                    while (diamonds_temp[0].properties.points == 2 and len(diamonds_temp) > 0):
+                    while (diamond[0].properties.points == 2 and len(diamond) > 0):
                         
-                        diamond = diamonds_temp.pop()
-                    if (len(diamonds_temp) <= 0):
+                        diamond = diamonds.pop()
+                    if (len(diamonds) <= 0):
                     
                         self.goal_position = board_bot.properties.base
                         delta_x, delta_y = get_direction(
@@ -160,7 +153,8 @@ class MyAlgo3(BaseLogic):
                             self.goal_position.y,
                         )
                         return delta_x, delta_y
-            
+                
+
                         
                 #Mengecek apakah waktu yang tersisa cukup untuk mengambil diamond lagi atau tidak
                 if (board_bot.properties.milliseconds_left < (diamond[1] + diamond[4] + 1.3) * (1000)) and (board_bot.properties.diamonds >= 1):

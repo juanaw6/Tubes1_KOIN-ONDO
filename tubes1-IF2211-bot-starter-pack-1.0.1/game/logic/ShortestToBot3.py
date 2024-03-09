@@ -6,8 +6,8 @@ import random
 from typing import Optional, List
 import time
 
-#Terdekat dari base
-class MyAlgo4(BaseLogic):
+#Mengumpulkan max diamond pada 30 detik pertama dan 30 deti sisanya mengumpulkan setengah dari inventory maksimum
+class ShortestToBot3Logic(BaseLogic):
     def __init__(self):
         self.goal_position: Optional[Position] = None
         self.goal_obj: Optional[GameObject] = None
@@ -60,15 +60,15 @@ class MyAlgo4(BaseLogic):
                         teleporters[ob.properties.pair_id].append(ob) 
 
                     teleporters_arr.append(ob) 
-
-            #Menghitung banyak diamond maksimal yang akan dibawa
-            max_inventory_size = board_bot.properties.inventory_size
+                    
+            max_inventory = board_bot.properties.inventory_size
             
-            if board_bot.properties.milliseconds_left < 20:
-                max_inventory_size = round(max_inventory_size / 2)
+            if (board_bot.properties.milliseconds_left < 30000):
+                max_inventory = round(board_bot.properties.inventory_size / 2)
                 
-            #Kembali ke base jika sudah membawa banyak diamand yang diinginkan
-            if board_bot.properties.diamonds >= max_inventory_size:
+                
+            #Kembali ke base jika sudah membawa diamand maksimal
+            if board_bot.properties.diamonds >= max_inventory:
                 base: Base = board_bot.properties.base
                 self.goal_position = base
                 self.is_use_teleporter = True
@@ -139,9 +139,8 @@ class MyAlgo4(BaseLogic):
                                     
                         diamonds.append((ob, range, teleporter_from, teleporter_to, range_to_base, teleporter_from_2))  
                         
-                #Diamond terakhir yang akan dibawa akan dicari berdasarkan total jarak 
-                #dari bot ke diamond + jarak dari diamond ke base yang terpendek 
-                diamonds.sort(key=lambda x: x[4], reverse=True)
+                
+                diamonds.sort(key=lambda x: x[1], reverse=True)  
                 
                 diamond = diamonds.pop()
                 
@@ -160,7 +159,8 @@ class MyAlgo4(BaseLogic):
                             self.goal_position.y,
                         )
                         return delta_x, delta_y
-                            
+                
+
                         
                 #Mengecek apakah waktu yang tersisa cukup untuk mengambil diamond lagi atau tidak
                 if (board_bot.properties.milliseconds_left < (diamond[1] + diamond[4] + 1.3) * (1000)) and (board_bot.properties.diamonds >= 1):
@@ -169,6 +169,13 @@ class MyAlgo4(BaseLogic):
                         
                     else:
                         self.goal_position = board_bot.properties.base
+                    
+                    delta_x, delta_y = get_direction(
+                        current_position.x,
+                        current_position.y,
+                        self.goal_position.x,
+                        self.goal_position.y,
+                    )
                 
                 else:
                     if (diamond[2] != None and diamond[3] != None):
@@ -189,12 +196,8 @@ class MyAlgo4(BaseLogic):
             else:
                 raise Exception("invalid move")
         except:
-            delta_x, delta_y = get_direction(
-                current_position.x,
-                current_position.y,
-                board_bot.properties.base.x,
-                board_bot.properties.base.y,
-            )
-            
-            return delta_x, delta_y
+            if board_bot.position.x == 0:
+                return 1, 0
+            else:
+                return -1,0
             

@@ -1,21 +1,21 @@
 <h1 align="center"> Tugas Besar 1 IF2211 Strategi Algoritma</h1>
-<h1 align="center">  Pemanfaatan Algoritma Greedy dalam Pembuatan Bot Permainan Diamonds </h1>
+<h1 align="center">  Algoritma Greedy dalam Pembuatan Bot Permainan Diamonds </h1>
 
 ## Identitas Pengembang Program
 
-### **Kelompok 7: TheYuds**
+### **Kelompok 40: KOIN/ONDO**
 
-|   NIM    |      Nama       |
-| :------: | :-------------: |
-| 13522045 | Elbert Chailes  |
-| 13522115 | Derwin Rustanly |
-| 10023634 | Yudi Kurniawan  |
+|   NIM    |        Nama        |
+| :------: | :----------------: |
+| 13522073 |   Juan Alfred W    |
+| 13522077 |   Enrique Yanuar   |
+| 13522117 | Mesach Harmasendro |
 
 ## Deskripsi Program
 
-Diamonds merupakan suatu programming challenge yang mempertandingkan bot yang anda buat dengan bot dari para pemain lainnya. Setiap pemain akan memiliki sebuah bot dimana tujuan dari bot ini adalah mengumpulkan diamond sebanyak-banyaknya. Cara mengumpulkan diamond tersebut tidak akan sesederhana itu, tentunya akan terdapat berbagai rintangan yang akan membuat permainan ini menjadi lebih seru dan kompleks. Untuk memenangkan pertandingan, setiap pemain harus mengimplementasikan strategi tertentu pada masing-masing bot-nya.
+Diamonds adalah tantangan pemrograman yang bertujuan untuk bertanding menggunakan bot yang Anda kembangkan melawan bot dari pemain lain. Setiap peserta akan memilik sebuah bot dengan tujuan utama untuk mengumpulkan sebanyak mungkin diamond. Namun, proses pengumpulan diamond ini tidak akan mudah karena terdapat berbagai tantangan seperti serangan dari bot lawan dan kebutuhan untuk menemukan strategi paling efisien dalam meraih kemenangan, menambahkan tingkat keseruan dan kompleksitas pada permainan. Untuk keluar sebagai pemenang, pemain harus merancang dan menerapkan strategi khusus pada bot mereka.
 
-Repositori ini berisi implementasi algoritma **_greedy by highest density_** dalam pembuatan bot permainan diamonds. **_Greedy by Highest Density_** adalah strategi greedy yang mengutamakan densitas tertinggi dari hasil pembagian poin yang didapatkan dari sebuah diamond dibagikan dengan perpindahan yang harus ditempuh untuk mendapatkan diamond tersebut.
+Repositori ini berisi implementasi algoritma **_greedy by highest block reward per distance from bot_** dalam pembuatan bot permainan diamonds. **_Greedy by highest block reward per distance from bot_** adalah algoritma yangb menghitung nilai reward dari diamond utama dan semua diamond di sekitarnya dalam radius 1 (3x3 blok), kemudian dibagi dengan jarak antara diamond utama dan bot. Semakin dekat diamond utama ke bot, semakin tinggi nilainya. Algoritma ini tidak mempertimbangkan jarak antara diamond utama ke base dan tidak menghitung jarak melalui teleporter. Teleporter hanya dipertimbangkan setelah tujuan bot telah ditentukan.
 
 ## Requirements Program
 
@@ -37,11 +37,11 @@ Repositori ini berisi implementasi algoritma **_greedy by highest density_** dal
 
    - Python (https://www.python.org/downloads/)
 
-## Set Up dan Build Program
+## Set Up dan Build Repositopry KOIN-ONDO
 
-1. Jalankan game engine dengan cara mengunduh starter pack game engine dalam bentuk file .zip yang terdapat pada tautan berikut https://github.com/haziqam/tubes1-IF2211-game-engine/releases/tag/v1.1.0
+1. Jalankan game engine dengan cara melakukan clone pada repository ini kemuadian unduh starter pack game engine dalam bentuk file .zip yang terdapat pada tautan berikut https://github.com/haziqam/tubes1-IF2211-game-engine/releases/tag/v1.1.0.
 
-   a. Setelah melakukan instalasi, lakukan ekstraksi file .zip tersebut lalu masuk ke root folder dari hasil ekstraksi file tersebut kemudian jalankan terminal
+   a. a. Setelah melakukan instalasi, lakukan ekstraksi file .zip tersebut lalu masuk ke root folder dari hasil ekstraksi file tersebut kemudian jalankan termina
 
    b. Jalankan perintah berikut pada terminal untuk masuk ke root directory dari game engine
 
@@ -102,11 +102,9 @@ Repositori ini berisi implementasi algoritma **_greedy by highest density_** dal
    i. Jika berhasil, tampilan terminal akan terlihat seperti gambar di bawah ini.
    ![gameenginesuccess](img/enginesuccess.png)
 
-2. Jalankan bot starter pack dengan cara mengunduh kit dengan ekstensi .zip yang terdapat pada tautan berikut
+2. Jalankan bot starter pack
 
-   https://github.com/haziqam/tubes1-IF2211-bot-starter-pack/releases/tag/v1.0.1
-
-   a. Lakukan ekstraksi file zip tersebut, kemudian masuk ke folder hasil ekstrak tersebut dan buka terminal
+   a. kembali ke directory "src"
    b. Jalankan perintah berikut untuk masuk ke root directory dari project
 
    ```bash
@@ -122,7 +120,7 @@ Repositori ini berisi implementasi algoritma **_greedy by highest density_** dal
    d. Jalankan program dengan cara menjalankan perintah berikuts.
 
    ```bash
-   python main.py --logic HighestDensity --email=your_email@example.com --name=your_name --password=your_password --team etimo
+   python main.py --logic bpdbot --email=your_email@example.com --name=your_name --password=your_password --team etimo
    ```
 
    e. Anda juga bisa menjalankan satu bot saja atau beberapa bot menggunakan .bat atau .sh script.
@@ -137,8 +135,3 @@ Repositori ini berisi implementasi algoritma **_greedy by highest density_** dal
    ```
    ./run-bots.sh
    ```
-
-## Dokumentasi Program
-
-![ss1](img/ss1.png)
-![ss2](img/ss2.png)

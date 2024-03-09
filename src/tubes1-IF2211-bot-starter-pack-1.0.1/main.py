@@ -28,7 +28,9 @@ init()
 BASE_URL = "http://localhost:3000/api"
 DEFAULT_BOARD_ID = 1
 CONTROLLERS = {
-    "bpdbot" : HighestBlockPerDistanceBotLogic, # main greedy lofic (the best)
+    # main greedy logic (the best)
+    "bpdbot" : HighestBlockPerDistanceBotLogic,
+    # alternative
     "stbot" : ShortestToBotLogic,
     "stbot2" : ShortestToBot2Logic,
     "stbot3" :ShortestToBot3Logic,

@@ -11,6 +11,7 @@ class HighestBlockPerDistanceBotLogic(BaseLogic):
         self.attack_other_bots = False
         self.time_based_retreat = True
 
+    # get total point in block (3x3)
     def get_surroundings_points(self, diamond: tuple[Position, int], list_of_diamonds: list[tuple[Position, int]]) -> int:
         list_to_check = [(-1, 1), (0, 1), (1, 1), (-1, 0), (1, 0), (-1, -1), (0, -1), (1, -1)]
         points = diamond[1]
@@ -22,15 +23,18 @@ class HighestBlockPerDistanceBotLogic(BaseLogic):
                     points += point
         return points
 
+    # check distance from to obj
     def get_distance(self, current_position: Position, target_position: Position) -> int:
         return abs(current_position.x - target_position.x) + abs(current_position.y - target_position.y)
 
+    # calculate value of point and distance
     def calculate_benefit(self, point: int, distance: int) -> float :
         if distance == 0:
             return 0
         else :
             return (point / distance) * 100000
         
+    # check for use teleport or not to reach target
     def is_teleporting_closer(self, bot_position: Position, target_position: Position, teleporter_pairs: list[tuple[Position, Position]]) -> tuple[bool, Optional[Position]]:
         direct_distance = self.get_distance(bot_position, target_position)
 
@@ -46,6 +50,7 @@ class HighestBlockPerDistanceBotLogic(BaseLogic):
 
         return False, None
     
+    # prioritize y movement
     def get_direction_yfirst(self, current_x: int, current_y: int, dest_x: int, dest_y: int) -> tuple[int | Literal[0], int | Literal[0]]:
         delta_x = clamp(dest_x - current_x, -1, 1)
         delta_y = clamp(dest_y - current_y, -1, 1)
@@ -53,6 +58,7 @@ class HighestBlockPerDistanceBotLogic(BaseLogic):
             delta_x = 0
         return (delta_x, delta_y)
     
+    # handling in case not moving
     def handle_not_moving(self, current_position: Position, board_width: int, board_height: int) -> tuple[int, int]:
         if current_position.x == 0:
             if current_position.y == 0:

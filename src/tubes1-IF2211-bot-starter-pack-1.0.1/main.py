@@ -5,24 +5,24 @@ from colorama import Back, Fore, Style, init
 from game.api import Api
 from game.board_handler import BoardHandler
 from game.bot_handler import BotHandler
-from game.logic.random import RandomLogic
+from game.logic_alternative.random import RandomLogic
 from game.util import *
-from game.logic.base import BaseLogic
+from game.logic_alternative.base import BaseLogic
 
-from game.logic.ShortestToBot2 import ShortestToBot2Logic
-from game.logic.ShortestToBot3 import ShortestToBot3Logic
-from game.logic.ShortestToBot import ShortestToBotLogic
-from game.logic.ShortestToBase import ShortestToBaseLogic
-from game.logic.ShortestToBotBase import ShortestToBotBaseLogic
-from game.logic.ShortestToHighestReward import ShortestToHighestRewardLogic
-from game.logic.HighestRewardPerDistanceBot import HighestRewardPerDistanceBotLogic
-from game.logic.HighestRewardPerDistanceBase import HighestRewardPerDistanceBaseLogic
-from game.logic.HighestRewardPerDistanceBotBase import HighestRewardPerDistanceBotBaseLogic
-from game.logic.ShortestToHighestBlock import ShortestToHighestBlockLogic
+from game.logic_alternative.ShortestToBot2 import ShortestToBot2Logic
+from game.logic_alternative.ShortestToBot3 import ShortestToBot3Logic
+from game.logic_alternative.ShortestToBot import ShortestToBotLogic
+from game.logic_alternative.ShortestToBase import ShortestToBaseLogic
+from game.logic_alternative.ShortestToBotBase import ShortestToBotBaseLogic
+from game.logic_alternative.ShortestToHighestReward import ShortestToHighestRewardLogic
+from game.logic_alternative.HighestRewardPerDistanceBot import HighestRewardPerDistanceBotLogic
+from game.logic_alternative.HighestRewardPerDistanceBase import HighestRewardPerDistanceBaseLogic
+from game.logic_alternative.HighestRewardPerDistanceBotBase import HighestRewardPerDistanceBotBaseLogic
+from game.logic_alternative.ShortestToHighestBlock import ShortestToHighestBlockLogic
 from game.logic.HighestBlockPerDistanceBot import HighestBlockPerDistanceBotLogic
-from game.logic.HighestBlockPerDistanceBase import HighestBlockPerDistanceBaseLogic
-from game.logic.HighestBlockPerDistanceBotBase import HighestBlockPerDistanceBotBaseLogic
-from game.logic.ShortestToBotV2 import ShortestToBotV2Logic
+from game.logic_alternative.HighestBlockPerDistanceBase import HighestBlockPerDistanceBaseLogic
+from game.logic_alternative.HighestBlockPerDistanceBotBase import HighestBlockPerDistanceBotBaseLogic
+from game.logic_alternative.ShortestToBotV2 import ShortestToBotV2Logic
 
 init()
 BASE_URL = "http://localhost:3000/api"

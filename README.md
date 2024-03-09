@@ -49,7 +49,7 @@ Repositori ini berisi implementasi algoritma **_greedy by highest block reward p
    cd tubes1-IF2110-game-engine-1.1.0
    ```
 
-   c. Lakukan instalasi dependencies dengan menggunakan yarn.
+   c. Lakukan instalasi dependencies menggunakan yarn.
 
    ```bash
    yarn

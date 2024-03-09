@@ -7,7 +7,7 @@ from game.board_handler import BoardHandler
 from game.bot_handler import BotHandler
 from game.logic_alternative.random import RandomLogic
 from game.util import *
-from game.logic_alternative.base import BaseLogic
+from game.logic.base import BaseLogic
 
 from game.logic_alternative.ShortestToBot2 import ShortestToBot2Logic
 from game.logic_alternative.ShortestToBot3 import ShortestToBot3Logic
@@ -28,7 +28,7 @@ init()
 BASE_URL = "http://localhost:3000/api"
 DEFAULT_BOARD_ID = 1
 CONTROLLERS = {
-    "Random": RandomLogic,
+    "bpdbot" : HighestBlockPerDistanceBotLogic, # main greedy lofic (the best)
     "stbot" : ShortestToBotLogic,
     "stbot2" : ShortestToBot2Logic,
     "stbot3" :ShortestToBot3Logic,
@@ -39,7 +39,6 @@ CONTROLLERS = {
     "rpdbase" : HighestRewardPerDistanceBaseLogic,
     "rpdbotbase" : HighestRewardPerDistanceBotBaseLogic,
     "sthb" : ShortestToHighestBlockLogic,
-    "bpdbot" : HighestBlockPerDistanceBotLogic,
     "bpdbase" : HighestBlockPerDistanceBaseLogic,
     "bpdbotbase" : HighestBlockPerDistanceBotBaseLogic,
     "stbv2" : ShortestToBotV2Logic
